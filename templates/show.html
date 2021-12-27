@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>数据显示</title>
+    <!-- Bootstrap -->
+    <script src="/static/jquery-3.6.0.min.js"></script>
+    <link href="/static/toastr/toastr.css" rel="stylesheet"/>
+    <script src="/static/toastr/toastr.min.js"></script>
+    <link href="/static/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2 style="text-align: center">学生信息管理系统</h2>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-inline" id="searchForm">
+                        <div class="form-group" id="nameSearchForm">
+                            <label for="InputName">姓名：</label>
+                            <input type="text" class="form-control" id="InputName" onblur=nameCheck("search")
+                                   name="name" placeholder="请输入姓名">
+                        </div>
+                        <div class="form-group" id="idSearchForm">
+                            <label for="InputNo">学号：</label>
+                            <input type="number" class="form-control" id="InputNo" onblur=idCheck("search") name="stuno"
+                                   placeholder="请输入学号">
+                        </div>
+                        <button type="button" class="btn btn-primary btn-sm" onclick=Pagebtn()>查询&刷新</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="list-op" id="list_op">
+                        <button type="button" class="btn btn-default btn-sm" id="btn_add">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" id="btn_update">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" id="btn_del">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                                <h4 class="modal-title" id="addModalLabel">新增学生信息</h4>
+                            </div>
+                            <form id="addStudentInfo" name="addStudentInfo" method="post">
+                                <div class="modal-body">
+                                    <div class="form-group idForm">
+                                        <label for="add_stu_id">学号</label>
+                                        <input type="text" name="stu_id" class="form-control id" onblur=idCheck("add")
+                                               id="add_stu_id" placeholder="请输入学号">
+                                        <span class="help-block idHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group nameForm">
+                                        <label for="add_stu_name">姓名</label>
+                                        <input type="text" name="stu_name" class="form-control name"
+                                               onblur=nameCheck("add")
+                                               id="add_stu_name" placeholder="请输入姓名">
+                                        <span class="help-block nameHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="stu_sex">性别</label>
+                                        <br>
+                                        <div class="radio-inline">
+                                            <label>
+                                                <input type="radio" name="stu_sex" value="男" checked>男
+                                            </label>
+                                        </div>
+                                        <div class="radio-inline">
+                                            <label>
+                                                <input type="radio" name="stu_sex" value="女">女
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group ageForm">
+                                        <label for="add_stu_age">年龄</label>
+                                        <input type="number" name="stu_age" onblur=ageCheck("add")
+                                               class="form-control age"
+                                               id="add_stu_age" placeholder="请输入年龄">
+                                        <span class="help-block ageHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group originForm">
+                                        <label for="add_stu_origin">籍贯</label>
+                                        <input type="text" name="stu_origin" class="form-control origin"
+                                               onblur=originCheck("add")
+                                               id="add_stu_origin" placeholder="请输入籍贯">
+                                        <span class="help-block originHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="add_stu_profession">专业</label>
+                                        <select name="stu_profession" id="add_stu_profession" class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                                            class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
+                                    </button>
+                                    <button type="button" id="btn_submit" class="btn btn-primary" onclick="addSub()"
+                                            data-dismiss="modal"><span
+                                            class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存
+                                    </button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                                <h4 class="modal-title" id="addModalLabel">修改学生信息</h4>
+                            </div>
+                            <form id="updateStudentInfo" name="updateStudentInfo" method="post">
+                                <div class="modal-body">
+                                    <div class="form-group idForm">
+                                        <label for="update_stu_id">学号</label>
+                                        <input type="text" name="stu_id" class="form-control id"
+                                               onblur=idCheck("update")
+                                               id="update_stu_id" placeholder="请输入学号">
+                                        <span class="help-block idHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group nameForm">
+                                        <label for="update_stu_name">姓名</label>
+                                        <input type="text" name="stu_name" class="form-control name"
+                                               onblur=nameCheck("update")
+                                               id="update_stu_name" placeholder="请输入姓名">
+                                        <span class="help-block nameHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="stu_sex">性别</label>
+                                        <br>
+                                        <div class="radio-inline">
+                                            <label>
+                                                <input type="radio" name="stu_sex" id="update_stu_sex_male" value="男"
+                                                       checked>男
+                                            </label>
+                                        </div>
+                                        <div class="radio-inline">
+                                            <label>
+                                                <input type="radio" name="stu_sex" id="update_stu_sex_female" value="女">女
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group ageForm">
+                                        <label for="update_stu_age">年龄</label>
+                                        <input type="number" name="stu_age" onblur=ageCheck("update")
+                                               class="form-control age"
+                                               id="update_stu_age" placeholder="请输入年龄">
+                                        <span class="help-block ageHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group originForm">
+                                        <label for="update_stu_origin">籍贯</label>
+                                        <input type="text" name="stu_origin" class="form-control origin"
+                                               onblur=originCheck("update")
+                                               id="update_stu_origin" placeholder="请输入籍贯">
+                                        <span class="help-block originHelpBlock"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="update_stu_profession">专业</label>
+                                        <select name="stu_profession" id="update_stu_profession" class="form-control">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                                            class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
+                                    </button>
+                                    <button type="button" id="btn_submit" class="btn btn-primary" onclick="updateSub()"
+                                            data-dismiss="modal"><span
+                                            class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal fade" id="delModal" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">×</span></button>
+                                <h4 class="modal-title" id="delModalLabel">删除学生信息</h4>
+                            </div>
+                            <div class="modal-body">
+                                确认要删除学号为<span id="delInfoId"></span>的信息吗？
+                            </div>
+                            <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                                            class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
+                                    </button>
+                                    <button type="button" id="btn_submit" class="btn btn-primary" onclick="delSub()"
+                                            data-dismiss="modal"><span
+                                            class="glyphicon glyphicon-trash" aria-hidden="true"></span>删除
+                                    </button>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="table-responsive" style="margin-top: 20px;">
+                    <table class="table table-bordered table-hover" id="info">
+                        <thead>
+                        <tr>
+                            <td>学号</td>
+                            <td>姓名</td>
+                            <td>性别</td>
+                            <td>年龄</td>
+                            <td>籍贯</td>
+                            <td>所在专业</td>
+                        </tr>
+                        </thead>
+                        <tbody id="stuInfo">
+                        </tbody>
+                    </table>
+                    <nav aria-label="...">
+                        <ul class="pager" id="navPaginate">
+                        </ul>
+                    </nav>
+                </div>
+                <div><p style="text-align: center;"><a href="/logout">退出登录</a></p> </div>
+
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+</body>
+
+<script>
+    toastr.options.positionClass = 'toast-top-right';
+</script>
+<script src="/static/show.js"></script>
+
+</html>
