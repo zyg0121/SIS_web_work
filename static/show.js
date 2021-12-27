@@ -35,9 +35,11 @@ function Pagebtn(opt) {
             //$('#navPaginate').append('<li><a href=\"/showinfo?page=' + ret_paginate['prev_num'] + '\">上一页</a></li>');
             $('#navPaginate').append('<li><button class="btn btn-default" type="button" id="prePage" onclick=Pagebtn(\'pre\') >上一页</button></li>');
         }
+        $('#navPaginate').append('<li><a href="#">第' + ret_paginate['page'] + '页，共' + ret_paginate['pages'] + '页</a></li>');
+        if(ret_paginate['page'] < ret_paginate['pages']) {
+            $('#navPaginate').append('<li><button class="btn btn-default" type="button" id="nextPgae" onclick=Pagebtn(\'next\')>下一页</button></li>');
+        }
         $('#navPaginate').append(
-            '<li><a href="#">第' + ret_paginate['page'] + '页，共' + ret_paginate['pages'] + '页</a></li>' +
-            '<li><button class="btn btn-default" type="button" id="nextPgae" onclick=Pagebtn(\'next\')>下一页</button></li>' +
             '<br/>每页显示' +
             '<select id="per_page" name="per_page" onchange=per_page_check()>\n' +
             '     <option>5</option>\n' +
