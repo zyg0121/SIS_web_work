@@ -22,6 +22,7 @@ function getStudentInfo(opt) {
         let ret_stu = $.parseJSON(result['stuinfo'].toString()); //将json字符串转换为json类型数据
         let ret_paginate = result['paginate'];
         $('#stuInfo').html(''); // 初始输出学生信息内容块清空
+        $('#checkAll').prop('checked',false); // 全选框默认为不选择
         $.each(ret_stu, function (info, value) { // 对获取到的学生信息的json数组类型数据进行遍历
             console.log(value.stu_id); // 测试输出学生学号
             console.log(typeof value.stu_id);
@@ -438,8 +439,11 @@ function delSub() {
                 toastr.success('删除学号为' + studelid[i].toString() + "的数据成功!");
             } else toastr.error('删除学号为' + studelid[i].toString() + "的数据失败!");
         });
+        if(i === ($tbr.find('input:checked').length)-1 ) { // 如果执行到最后一次删除操作后则刷新数据
+            console.log('okk');
+            getStudentInfo();
+        }
     }
-    getStudentInfo();
 }
 
 /*
