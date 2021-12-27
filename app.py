@@ -29,12 +29,12 @@ captcha = FlaskSessionCaptcha(app)
 
 db = SQLAlchemy(app)
 
-
+# 学生专业类
 class stu_profession(db.Model):
     stu_profession_id = db.Column(db.Integer, primary_key=True)
     stu_profession = db.Column(db.String(50))
 
-
+# 学生信息类
 class student_info(db.Model):
     __tablename__ = "student_info"
     stu_id = db.Column(db.Integer, primary_key=True)
@@ -45,7 +45,7 @@ class student_info(db.Model):
     stu_profession_id = db.Column(db.Integer, db.ForeignKey("stu_profession.stu_profession_id"))
     stu_profession = db.relationship("stu_profession")
 
-
+# 将学生信息类信息转换为dict输出
 def student_to_dict(student_info):
     return dict(
         stu_id=student_info.stu_id,
@@ -57,11 +57,6 @@ def student_to_dict(student_info):
     )
 
 
-def MergeDict(dict1, dict2):
-    res = {**dict1, **dict2}
-    return res
-
-
 def CheckLogin():
     if 'username' not in session:
         return False
@@ -71,15 +66,18 @@ def CheckLogin():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    if request.method == "GET":
+    if request.method == "GET":  # 初始情况下直接加载模板
         ret = {'username': '', 'pwd': '', 'hidden': 'none'}
         return render_template('login.html', ret=ret)
+    # 如果是post请求，说明用户尝试登录
+    # 从数据库获取查询结果
     result, _ = GetSql2("select * from users where username='%s'" % request.form['username'])
     print(result)
-    if len(result) > 0 and result[0][1] == request.form['pwd'] and captcha.validate():
-        session["username"] = request.form['username']
-        return redirect(url_for('index'))
-    else:
+    # 用户名、密码、验证码全部验证成功，方可登录，否则登陆失败
+    if len(result) > 0 and result[0][1] == request.form['pwd'] and captcha.validate():  # 登陆成功
+        session["username"] = request.form['username']  # 使用session保存用户名
+        return redirect(url_for('index'))  # 重定向到路由"/"
+    else:  # 登陆成功,用户名和密码不清除
         ret = {'username': request.form['username'], 'pwd': request.form['pwd'], 'hidden': 'block'}
         return render_template('login.html', ret=ret)
 
@@ -100,18 +98,16 @@ def index():
 
 @app.route('/showinfo', methods=['GET'])
 def showinfo():
-    if not CheckLogin():
+    if not CheckLogin():  # 检查是否登录
         return redirect(url_for('login'))
 
-    page = int(request.args.get('page', 1))
-    per_page = int(request.args.get('per_page', 5))
+    page = int(request.args.get('page', 1))  # 当前页面编号
+    per_page = int(request.args.get('per_page', 5))  # 当前页面显示几条信息
 
-    name = str(request.args.get('name', ""))
-    stuno = str(request.args.get('stuno', ""))
+    name = str(request.args.get('name', ""))  # 用户查询所用的姓名
+    stuno = str(request.args.get('stuno', ""))  # 用户查询所用的学号
 
-    # filter(student_info.stu_name.like('%%%s%%' % name)).\
-    # filter(student_info.stu_id.like('%%%s%%' % stuno)).\
-    if name == "" and stuno == "":
+    if name == "" and stuno == "":  # 没有查询关键字，
         paginate = db.session.query(student_info).join(stu_profession). \
             filter(student_info.stu_profession_id == stu_profession.stu_profession_id). \
             order_by(student_info.stu_id).paginate(page, per_page, error_out=False)
@@ -143,10 +139,6 @@ def showinfo():
         ret.append(student_to_dict(stu))
         # i = i + 1
 
-    # print(ret)
-    # print(type(ret))
-    # print(student_to_dict(stus))
-
     ret_paginate = {'has_prev': ('yes' if paginate.has_prev else 'no'), 'prev_num': paginate.prev_num,
                     'pages': paginate.pages, 'next_num': paginate.next_num, 'total': paginate.total,
                     'per_page': per_page, 'page': paginate.page}
@@ -159,16 +151,9 @@ def showinfo():
 def add():
     if not CheckLogin():
         return redirect(url_for('login'))
-
     if request.method == "GET":
-
         datas, _ = GetSql2("select * from stu_profession")
-        # print(datas)
-        # print(type(datas))
         return dict(datas)
-        # return render_template('add.html', datas=datas)
-        # return render_template('add.html')
-
     else:
         data = dict(
             stu_id=request.form['stu_id'],
@@ -178,9 +163,7 @@ def add():
             stu_origin=request.form['stu_origin'],
             stu_profession_id=request.form['stu_profession']
         )
-
         res = {'code': 500, 'message': '添加失败！'}
-
         matchid = re.search(r'^\d{9,12}$', data['stu_id'])
         matchname = re.search(r'^[\u4e00-\u9fa5]{2,6}$', data['stu_name'])
         matchsex = re.search(r'^男$|^女$', data['stu_sex'])

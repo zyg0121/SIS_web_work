@@ -116,7 +116,6 @@ initTableCheckbox();
 
 // add获取专业信息
 $("#btn_add").click(function () {
-    //console.log('点了');
     $("#addModalLabel").text("新增学生信息");
     $('#addModal').modal();
     if ($("#add_stu_profession").val() == null) {
@@ -174,24 +173,23 @@ function nameCheck(opt) {
 }
 
 function idCheck(opt) {
-    let reg = /^\d{9,12}$/;
-    if (opt === "add") {
-        let id = $("#addStudentInfo .id").val();
-        if (!reg.test(id) || id === '') {
+    let reg = /^\d{9,12}$/; //验证学号的正则表达式，此处意思是学号必须为长度9-12的数字
+    if (opt === "add") { //增加学生信息
+        let id = $("#addStudentInfo .id").val();//得到输入的值
+        if (!reg.test(id) || id === '') { //不符合正则表达式或没输入任何值
             //console.log('error')
-            $('#addStudentInfo .idForm').attr("class", "form-group idForm has-error");
-            $('#addStudentInfo .idHelpBlock').text('请输入正确的学号(9-12位数字)！');
+            $('#addStudentInfo .idForm').attr("class", "form-group idForm has-error");//修改输入框的样式为红色
+            $('#addStudentInfo .idHelpBlock').text('请输入正确的学号(9-12位数字)！');   //显示错误提示
             return false;
         } else {
             //console.log('√');
-            $('#addStudentInfo .idForm').attr("class", "form-group idForm has-success");
-            $('#addStudentInfo .idHelpBlock').text('');
+            $('#addStudentInfo .idForm').attr("class", "form-group idForm has-success");//修改输入框的样式为绿色
+            $('#addStudentInfo .idHelpBlock').text(''); //不显示提示信息
             return true;
         }
-    } else if (opt === "update") {
+    } else if (opt === "update") { //更新学生信息
         let id = $("#updateStudentInfo .id").val();
         if (!reg.test(id) || id === '') {
-            //console.log('error')
             $('#updateStudentInfo .idForm').attr("class", "form-group idForm has-error");
             $('#updateStudentInfo .idHelpBlock').text('请输入正确的学号(9-12位数字)！');
             return false;
@@ -201,7 +199,7 @@ function idCheck(opt) {
             $('#updateStudentInfo .idHelpBlock').text('');
             return true;
         }
-    } else if (opt === "search") {
+    } else if (opt === "search") { //搜索功能
         let id = $("#InputNo").val();
         if (!reg.test(id) || id === '') {
             //console.log('error')
@@ -300,24 +298,24 @@ $.fn.serializeJson = function () {
 };
 
 function addSub() {
-    if (nameCheck("add") && idCheck("add") && ageCheck("add") && originCheck("add")) {
+    if (nameCheck("add") && idCheck("add") && ageCheck("add") && originCheck("add")) {//前端验证完毕
         console.log('all right');
         let ret = $('#addStudentInfo').serializeJson(); // 表单数据变为json
         console.log(ret);
-        $.ajax({
-            type: 'POST',
-            url: '/add',
-            data: ret,
+        $.ajax({ //执行ajax请求，将前端验证后的数据传递给后端
+            type: 'POST',//请求为post
+            url: '/add', //服务器端路由为/add
+            data: ret,  //封装后的Json数据
             dataType: 'Json',
             success: function (ret, message) {
-                if (ret['code'] === 200) toastr.success('提交数据成功!');
-                else toastr.error('提交数据失败!');
+                if (ret['code'] === 200) toastr.success('提交数据成功!');//提交成功，通过toastr显示提示
+                else toastr.error('提交数据失败!');//提交出错，通过toastr显示提示
                 console.log(ret);
                 console.log(message);
                 Pagebtn();
             },
             error: function (ret, message) {
-                toastr.error('提交数据失败!');
+                toastr.error('提交数据失败!');//提交失败，通过toastr显示提示
                 console.log(message);
             }
         });
