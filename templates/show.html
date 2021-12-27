@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>数据显示</title>
-    <!-- Bootstrap -->
+    <!-- 加载jQuery，Bootstrap和toastr -->
     <script src="/static/jquery-3.6.0.min.js"></script>
     <link href="/static/toastr/toastr.css" rel="stylesheet"/>
     <script src="/static/toastr/toastr.min.js"></script>
@@ -30,7 +30,7 @@
                             <input type="number" class="form-control" id="InputNo" onblur=idCheck("search") name="stuno"
                                    placeholder="请输入学号">
                         </div>
-                        <button type="button" class="btn btn-primary btn-sm" onclick=Pagebtn()>查询&刷新</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick=getStudentInfo()>查询&刷新</button>
                     </form>
                 </div>
             </div>
@@ -250,8 +250,9 @@
 </body>
 
 <script>
-    toastr.options.positionClass = 'toast-top-right';
+    toastr.options.positionClass = 'toast-top-right'; // 指定弹出提示信息窗口为右上
 </script>
+<script src="/static/jquery-3.6.0.min.js"></script>
 <script src="/static/show.js"></script>
 
 </html>
