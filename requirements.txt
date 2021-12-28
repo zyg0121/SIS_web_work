@@ -1,0 +1,4 @@
+Flask_Sessionstore==0.4.5
+Flask==2.0.2
+Flask_SQLAlchemy==2.5.1
+flask_session_captcha==1.2.0
